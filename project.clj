@@ -60,6 +60,7 @@
                                   [com.cemerick/piggieback "0.2.2"]
                                   [pjstadig/humane-test-output "0.8.3"]]
                    :source-paths ["env/dev/clj"]
+                   :resource-paths ["config/prod"]
                    :plugins [[lein-figwheel "0.5.11"
                               :exclusions [org.clojure/core.memoize
                                            ring/ring-core
@@ -82,7 +83,7 @@
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "personal-website.dev"
                                                          :source-map true}}}}}
-
+             :prod {:resource-paths ["config/prod"]}
              :uberjar {:hooks [minify-assets.plugin/hooks]
                        :source-paths ["env/prod/clj"]
                        :prep-tasks ["compile" ["cljsbuild" "once"]]
