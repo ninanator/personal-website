@@ -3,19 +3,18 @@
             [personal-website.util :as util]
             [config.core :refer [env]]))
 
-(def ^:private cdn-domain-url (:cdn-domain-url env))
-(def ^:private access-token   (:cdn-access-token env))
-(def ^:private space          (:cdn-space env))
+(def ^:private cdn-domain-url (:cms-domain-url env))
+(def ^:private access-token   (:cms-access-token env))
+(def ^:private space          (:cms-space env))
 (def ^:private get-posts-order  "-fields.createDate")
 (def ^:private get-posts-select "sys,fields.category,fields.createDate,fields.slug,fields.summary,fields.title")
+(def ^:private categories {:opinions                 (:cms-opinions-token env)
+                           :algorithms               (:cms-algorithms-token env)
+                           :data-structures          (:cms-data-structures-token env)
+                           :fundamental-concepts     (:cms-findamental-concepts-token env)
+                           :languages-and-frameworks (:cms-languages-and-frameworks-token env)})
 
-(def ^:private categories {:opinions                 (:cdn-opinions-token env)
-                           :algorithms               (:cdn-algorithms-token env)
-                           :data-structures          (:cdn-data-structures-token env)
-                           :fundamental-concepts     (:cdn-findamental-concepts-token env)
-                           :languages-and-frameworks (:cdn-languages-and-frameworks-token env)})
-
-(def ^:private contentful-entries-api (format "%s/spaces/%s/entries", cdn-domain-url, space))
+(def ^:private contentful-entries-api (format "%s/spaces/%s/entries", cms-domain-url, space))
 
 (defn get-contentful-categories []
   (client/get contentful-entries-api {:as :json
