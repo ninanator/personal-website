@@ -3,7 +3,7 @@
             [personal-website.util :as util]
             [config.core :refer [env]]))
 
-(def ^:private cdn-domain-url (:cms-domain-url env))
+(def ^:private cms-domain-url (:cms-domain-url env))
 (def ^:private access-token   (:cms-access-token env))
 (def ^:private space          (:cms-space env))
 (def ^:private get-posts-order  "-fields.createDate")
