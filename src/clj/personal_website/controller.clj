@@ -38,14 +38,20 @@
 (defn- flatten-included [components]
   (reduce conj (components :items) (flatten (vals (components :includes)))))
 
-(defn get-blog-post [post]
-  (-> (contentful/get-contentful-post post) clean-entries transform-components flatten-included))
+(defn get-blog-post
+  "Retrieves, cleans, and formats the raw blog post data for post `post` coming from Contentful CMS."
+  [post]
+  (-> (contentful/get-blog-post post) clean-entries transform-components flatten-included))
 
-(defn get-blog-categories []
-  (-> (contentful/get-contentful-categories) clean-entries transform-components flatten-included))
+(defn get-blog-categories
+  "Retrieves, cleans, and formats the raw blog category data coming from Contentful CMS."
+  []
+  (-> (contentful/get-blog-categories) clean-entries transform-components flatten-included))
 
 (defn get-blog-posts-by-category
+  "Retrieves, cleans, and formats the raw blog post data coming from Contentful CMS.
+   Providing a `category` will only return blog posts that match that category."
   ([]
-   (-> (contentful/get-contentful-posts) clean-entries transform-components flatten-included))
+   (-> (contentful/get-blog-posts) clean-entries transform-components flatten-included))
   ([category]
-   (-> (contentful/get-contentful-posts-by-category category) clean-entries transform-components flatten-included)))
+   (-> (contentful/get-blog-posts-by-category category) clean-entries transform-components flatten-included)))

@@ -1,5 +1,6 @@
 (ns personal-website.repl
   (:use personal-website.handler
+        figwheel-sidecar.repl-api
         ring.server.standalone
         [ring.middleware file-info file]))
 

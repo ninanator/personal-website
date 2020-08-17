@@ -1,17 +1,16 @@
 (ns personal-website.handler
   (:require [clojure.data.json :as json]
-            [compojure.core :refer [GET defroutes context]]
-            [compojure.route :refer [not-found resources]]
-            [hiccup.page :refer [include-js include-css html5]]
             [config.core :refer [env]]
-            [personal-website.middleware :refer [wrap-middleware]]
-            [personal-website.controller :as controller]))
+            [hiccup.page :refer [include-js include-css html5]]
+            [personal-website.middleware :refer [middleware]]
+            [personal-website.controller :as controller]
+            [reitit.ring :as reitit-ring]))
 
-(def mount-target
+(def ^:private mount-target
   [:div#app
     [:img {:class "page-loading" :src "/assets/reload.gif"}]])
 
-(def loading-page
+(defn- loading-page []
   (html5
     [:head {:lang "en"}
       [:meta {:charset "utf-8"}]
@@ -26,25 +25,37 @@
                   "https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"
                   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")]))
 
-(defroutes public-routes
-  (GET "/" [] loading-page)
-  (GET "/blog/entries" [] loading-page)
-  (GET "/blog/entries/:entry" [entry] loading-page)
-  (GET "/blog/entries*" {params :query-params} loading-page))
+(defn- index-handler [_]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (loading-page)})
 
-(defroutes api-routes
-  (context "/api/v1" []
-    (GET "/posts/:post" [post]
-      (json/write-str (controller/get-blog-post post)))
-    (GET "/posts*" {params :query-params}
-      (json/write-str (controller/get-blog-posts-by-category (get params "category"))))
-    (GET "/categories" []
-      (json/write-str (controller/get-blog-categories)))))
+(defn- api-handler [fn]
+   {:status 200
+    :headers {"Content-Type" "application/json"}
+    :body (json/write-str (fn))})
 
-(defroutes app-routes
-    public-routes
-    api-routes
-    (resources "/")
-    (not-found "Not Found"))
+(def ^:private public-routes
+  [["/" {:get {:handler index-handler}}]
+   ["/blog"
+    ["/entries" {:get {:handler index-handler}}]
+    ["/entries/:entry" {:get {:handler index-handler}}]]])
 
-(def app (wrap-middleware #'app-routes))
+(def ^:private api-routes
+  [["/api/v1"
+    ["/blog/categories" {:get {:handler (fn [_]
+                                          (api-handler controller/get-blog-categories))}}]
+    ["/blog/posts/:post" {:get {:handler (fn [{:keys [path-params]}]
+                                           (api-handler
+                                             #(controller/get-blog-post (get path-params :post))))}}]
+    ["/blog/posts" {:get {:handler (fn [{:keys [query-params]}]
+                                     (api-handler
+                                       #(controller/get-blog-posts-by-category (get query-params "category"))))}}]]])
+
+(def app
+  (reitit-ring/ring-handler
+    (reitit-ring/router [public-routes api-routes])
+    (reitit-ring/routes
+      (reitit-ring/create-resource-handler {:path "/" :root "/public"})
+      (reitit-ring/create-default-handler))
+    {:middleware middleware}))

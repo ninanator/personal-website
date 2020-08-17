@@ -1,10 +1,9 @@
 (ns personal-website.middleware
-  (:require [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-            [prone.middleware :refer [wrap-exceptions]]
-            [ring.middleware.reload :refer [wrap-reload]]))
+  (:require [prone.middleware :refer [wrap-exceptions]]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]))
 
-(defn wrap-middleware [handler]
-  (-> handler
-      (wrap-defaults site-defaults)
-      wrap-exceptions
-      wrap-reload))
+(def middleware
+  [#(wrap-defaults % site-defaults)
+   wrap-exceptions
+   wrap-reload])

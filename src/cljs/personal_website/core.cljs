@@ -1,132 +1,64 @@
 (ns personal-website.core
-    (:require [reagent.core :as reagent :refer [atom]]
+    (:require [clerk.core :as clerk]
+              [reagent.core :as reagent]
+              [reagent.dom :as rdom]
               [reagent.session :as session]
-              [secretary.core :as secretary :include-macros true]
+              [reitit.frontend :as reitit]
               [accountant.core :as accountant]
-              [ajax.core :refer [GET]]
-              [markdown.core :refer [md->html]]
-              [personal-website.transforms :as t]
-              [personal-website.home :as h]
-              [personal-website.blog :as b]))
-
-;; -------------------------
-;; Atoms
-
-(def category-data (atom {}))
-(def post-data (atom {}))
-
-;; -------------------------
-;; Data
-
-(defn response-handler [response-atom]
-  (fn [response] (reset! response-atom (t/components->map response))))
-
-(defn error-handler [{:keys [status status-text]}]
-  (.log js/console (str "Something bad happened: " status " " status-text)))
-
-(defn fetch-categories []
-  (GET "/api/v1/categories" {:response-format :json
-                             :keywords?       :true
-                             :handler         (response-handler category-data)
-                             :error-handler   error-handler}))
-
-(defn fetch-posts
-  ([]
-   (GET "/api/v1/posts" {:response-format :json
-                          :keywords?       :true
-                          :handler         (response-handler post-data)
-                          :error-handler   error-handler}))
- ([category]
-  (GET (str "/api/v1/posts?category=" (str category)) {:response-format :json
-                                                        :keywords?       :true
-                                                        :handler         (response-handler post-data)
-                                                        :error-handler   error-handler})))
-
-(defn fetch-post [post]
-  (GET (str "/api/v1/posts/" post) {:response-format :json
-                                    :keywords?       :true
-                                    :handler         (response-handler post-data)
-                                    :error-handler   error-handler}))
-
-;; -------------------------
-;; Views
-
-(defn navbar []
-  [:nav {:class "navbar navbar-color"}
-    [:div {:class "container-fluid"}
-      [:div {:class "navbar-header"}
-       [:button {:type "button"
-                 :class "navbar-toggle collapsed"
-                 :data-toggle "collapse"
-                 :data-target "#navbar-data"
-                 :aria-expanded "false"}
-          [:span {:class "sr-only"} "Toggle Navigation"]
-          [:span {:class "icon-bar background-black"}]
-          [:span {:class "icon-bar background-black"}]
-          [:span {:class "icon-bar background-black"}]]
-       [:a {:class "navbar-brand bold" :href "/"} "Nina Blanson"]]
-      [:div {:class "collapse navbar-collapse" :id "navbar-data"}
-        [:ul {:id "main-nav" :class "nav navbar-nav navbar-right"}
-          [:li
-            [:a {:href b/blog-url} "Electric Sheep"]]]]]])
-
-;; Home Page
-(defn home-page []
-  [:div {:class "container"}
-    [navbar]
-    [:div {:class "col-md-12" :role "main"} [h/home-body]]])
-
-;; Blog Pages
-(defn blog-entries-page []
-  [:div {:class "container"}
-    [navbar]
-    [:div {:class "col-xs-12 col-sm-12 col-md-12 col-lg-12" :role "main"}
-      [:div {:class "col-xs-12 col-sm-12 col-md-12"} [b/blog-header-element]]
-      [:div {:class "col-xs-12 col-sm-9 col-md-9"} [b/blog-entries-element @post-data]]
-      [:div {:class "col-sm-3 col-md-3"} [b/blog-nav-element @category-data]]]])
-
-(defn blog-entry-page []
-  [:div {:class "container"}
-    [navbar]
-    [:div {:class "col-xs-12 col-sm-12 col-md-12 col-lg-12" :role "main"}
-      [:div {:class "col-xs-12 col-sm-12 col-md-12"} [b/blog-header-element]]
-      [:div {:class "col-xs-12 col-sm-9 col-md-9"} [b/blog-entry-element @post-data]]
-      [:div {:class "col-sm-3 col-md-3"} [b/blog-nav-element @category-data]]]])
+              [personal-website.components.navbar :refer [navbar]]
+              [personal-website.pages.blog :as blog]
+              [personal-website.pages.blog-entry :as blog-entry]
+              [personal-website.pages.home :as home]))
 
 ;; -------------------------
 ;; Routes
+;; If updating, make sure to look at [[page-for]]!
 
-(defonce page (atom #'home-page))
+(def router
+  (reitit/router
+    [["/" :index]
+     ["/blog"
+      ["/entries" :blog-entries]
+      ["/entries/:entry" :blog-entry]]]))
+
+;; -------------------------
+;; Translate routes -> page components
+
+(defn page-for [route]
+  (case route
+    :index #'home/page
+    :blog-entries #'blog/page
+    :blog-entry #'blog-entry/page))
+
+;; -------------------------
+;; Page mounting component
+;; Add any cross-page elements here (navbar, footer, ect).
 
 (defn current-page []
-  [:div [@page]])
-
-(secretary/defroute "/" []
-  (reset! page #'home-page))
-
-(secretary/defroute "/blog/entries" [query-params]
-  (fetch-categories)
-  (fetch-posts (get query-params :category))
-  (reset! page #'blog-entries-page))
-
-(secretary/defroute "/blog/entries/:entry" [entry]
-  (fetch-categories)
-  (fetch-post entry)
-  (reset! page #'blog-entry-page))
+  (fn []
+    (let [page (:current-page (session/get :route))]
+      [:div {:class "container"}
+       [navbar]
+       [:div {:class "col-md-12" :role "main"}
+        [page]]])))
 
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+  (rdom/render [current-page] (.getElementById js/document "app")))
 
 (defn init! []
-  (accountant/configure-navigation!
-    {:nav-handler
-     (fn [path]
-       (secretary/dispatch! path))
-     :path-exists?
-     (fn [path]
-       (secretary/locate-route path))})
+  (clerk/initialize!)
+  (accountant/configure-navigation! {:nav-handler (fn [path] (let [match (reitit/match-by-path router path)
+                                                                   current-page (:name (:data  match))
+                                                                   route-params (:path-params match)
+                                                                   query-params (:query (:parameters match))]
+                                                               (reagent/after-render clerk/after-render!)
+                                                               (session/put! :route {:current-page (page-for current-page)
+                                                                                     :route-params route-params
+                                                                                     :query-params query-params})
+                                                               (clerk/navigate-page! path)))
+                                     :path-exists? (fn [path] (boolean (reitit/match-by-path router path)))})
   (accountant/dispatch-current!)
   (mount-root))
