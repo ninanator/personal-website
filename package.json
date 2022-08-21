@@ -1,0 +1,18 @@
+{
+  "name": "@nmb/personal-website",
+  "packageManager": "yarn@3.2.2",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "website:dev": "yarn workspace @nmb/website run dev",
+    "website:format": "yarn workspace @nmb/website run format",
+    "website:lint": "yarn workspace @nmb/website run lint"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  },
+  "engines": {
+    "node": "18.7.0"
+  }
+}

@@ -1,38 +1,42 @@
-import { createTheme, PaletteOptions } from '@mui/material/styles';
+import {
+  createTheme,
+  ThemeOptions as ThemeOptionsType,
+} from '@mui/material/styles';
+import { PaletteMode } from '@mui/material';
 
-// declare module '@mui/material/styles' {
-//   interface Theme {
-//     palette: PaletteOptions & {
-//       text: {
-//         hover: string;
-//       };
-//     };
-//   }
-//   // Allow configuration using `createTheme`
-//   interface ThemeOptions {
-//     palette?: PaletteOptions & {
-//       text?: {
-//         hover?: string;
-//       };
-//     };
-//   }
-// }
+declare module '@mui/material/styles' {
+  // eslint-disable-next-line no-unused-vars
+  interface TypeText {
+    hover: string;
+  }
+}
 
-const theme = createTheme({
-  palette: {
-    text: {
-      hover: '#7FB02C',
-    },
-  },
-  components: {
-    MuiLink: {
-      styleOverrides: {
-        root: {
+export const checkIsDarkMode = (mode: PaletteMode): boolean => mode === 'dark';
 
-        },
+const createThemeOverrides = (mode: PaletteMode): ThemeOptionsType => {
+  const isDarkMode = checkIsDarkMode(mode);
+
+  return {
+    palette: {
+      background: {
+        default: isDarkMode ? '#0F1216' : '#FFF',
+      },
+      text: {
+        hover: '#7FB02C',
       },
     },
-  },
-});
+  };
+};
 
-export default theme;
+export default function updateTheme(mode: PaletteMode) {
+  const { palette: paletteOverrides, ...otherThemeKeysOverrides } =
+    createThemeOverrides(mode);
+
+  return createTheme({
+    palette: {
+      mode,
+      ...paletteOverrides,
+    },
+    ...otherThemeKeysOverrides,
+  });
+}

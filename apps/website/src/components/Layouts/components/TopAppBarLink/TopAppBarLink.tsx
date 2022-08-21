@@ -2,15 +2,17 @@ import * as React from 'react';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
 import Typography from '@mui/material/Typography';
+import { SxProps, Theme } from '@mui/material';
 
 type TopAppBarLinkProps = {
   href: string;
   title: string;
+  sx?: SxProps<Theme>;
   variant: 'top' | 'menu';
 };
 
 function TopAppBarLink(props: TopAppBarLinkProps) {
-  const { href, title, variant } = props;
+  const { href, title, sx = {}, variant } = props;
 
   if (variant === 'menu') {
     return (
@@ -26,8 +28,9 @@ function TopAppBarLink(props: TopAppBarLinkProps) {
       <Link
         sx={{
           '&:hover, .MuiLink-underlineNone': { color: 'text.hover' },
+          ...sx,
         }}
-        color="black"
+        color="text.primary"
         underline="none"
         variant="subtitle1"
       >
@@ -36,5 +39,9 @@ function TopAppBarLink(props: TopAppBarLinkProps) {
     </NextLink>
   );
 }
+
+TopAppBarLink.defaultProps = {
+  sx: {},
+};
 
 export default TopAppBarLink;
