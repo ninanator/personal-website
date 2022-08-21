@@ -1,0 +1,20 @@
+# TMP
+/clojure
+
+# Javascript
+**/node_modules
+
+# NextJS
+**/.next
+
+# Config
+*.iml
+*.json
+*.yml
+/.idea
+/.moon
+/.yarn
+.editorconfig
+.gitignore
+.prettierrc.js
+yarn.lock

@@ -2,7 +2,6 @@
 Code that powers my personal website at https://ninablanson.com.
 
 Uses:
-1. [Clojure](https://clojure.org/) for BE.
-2. [ClojureScript with Reagent](https://github.com/reagent-project/reagent) for FE.
-3. [Contentful](https://www.contentful.com/) for CMS.
-4. [DigitalOcean](https://m.do.co/c/2105fa716194) for hosting.
+1. [NextJS](https://nextjs.org/) for FE.
+2. [Contentful](https://www.contentful.com/) for CMS.
+3. [Vercel](https://vercel.com/) for hosting.

@@ -1,21 +1,12 @@
-/target
-/classes
-/checkouts
-profiles.clj
-pom.xml
-pom.xml.asc
-*.jar
-*.class
-/.lein-*
-/.nrepl-port
-/resources/public/js
-/out
-/.repl
-*.log
-/.env
+/clojure
+
+# Idea
 .DS_Store
-config.edn
-*.min.css
-.clj-kondo
-.rebel_readline_history
 /.idea
+*.iml
+
+# Yarn
+node_modules
+
+# Moon
+.moon/cache
