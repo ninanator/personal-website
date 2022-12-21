@@ -3,6 +3,9 @@
 /.idea
 *.iml
 
+# VSCode
+.vscode
+
 # Yarn PnP
 # https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .yarn/*
@@ -12,3 +15,20 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# NextJS
+## Cached files
+*/**/.next/
+*/**/out/
+
+## Environment files
+*/**/.env.*
+
+## Typescript
+*/**/next-env.d.ts
+
+## Vercel
+*/**/.vercel
+
+# Turbo
+.turbo

@@ -1,18 +1,27 @@
 {
   "name": "@nmb/personal-website",
+  "private": true,
   "packageManager": "yarn@3.2.2",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "website:dev": "yarn workspace @nmb/website run dev",
-    "website:format": "yarn workspace @nmb/website run format",
-    "website:lint": "yarn workspace @nmb/website run lint"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "test": "turbo run test",
+    "type": "turbo run type"
   },
   "devDependencies": {
-    "prettier": "^2.7.1"
+    "prettier": "^2.8.1",
+    "turbo": "^1.6.3"
   },
   "engines": {
-    "node": "18.7.0"
+    "node": "18.12.1"
+  },
+  "dependencies": {
+    "typescript": "4.7.4"
   }
 }
