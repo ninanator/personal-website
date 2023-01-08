@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import { BlogPostType } from '../../../server/contentful';
 import BlogCategory from '../BlogCategory';
-import Link from '../../Link';
+import Link from '../../../../../../packages/ui/Link';
 
 type BlogPostSummariesProp = {
   blogPosts: BlogPostType[];

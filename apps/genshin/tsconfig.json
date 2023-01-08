@@ -15,7 +15,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "rootDir": "../website",
+    "rootDir": "../genshin",
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,

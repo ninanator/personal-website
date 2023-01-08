@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Image from 'next/image';
 import { BlogCategoryType } from '../../../server/contentful';
-import Link from '../../Link';
+import Link from '../../../../../../packages/ui/Link';
 
 function BlogCategory(props: BlogCategoryType) {
   const { icon, slug, title } = props;
