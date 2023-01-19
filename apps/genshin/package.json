@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@nmb/ui": "workspace:0.0.0",
-    "contentful": "^9.2.15",
-    "next": "^13.1.1",
+    "contentful": "^9.2.17",
+    "next": "^13.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -21,9 +21,9 @@
     "@nmb/eslint-config-custom": "workspace:0.0.0",
     "@nmb/tsconfig": "0.0.0",
     "@types/node": "^18.11.18",
-    "@types/react": "^18.0.26",
+    "@types/react": "^18.0.27",
     "autoprefixer": "^10.4.13",
-    "eslint": "^8.31.0",
+    "eslint": "^8.32.0",
     "eslint-plugin-turbo": "^0.0.7",
     "eslint-plugin-unicorn": "^45.0.2",
     "postcss": "^8.4.21",

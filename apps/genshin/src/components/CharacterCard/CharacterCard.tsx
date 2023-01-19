@@ -7,6 +7,7 @@ type ChipProps = {
   label: string;
 };
 
+// TODO Move into its own file
 function Chip(props: ChipProps) {
   const { className, label } = props;
 
@@ -35,8 +36,10 @@ function CharacterCard(props: GenshinCharacter) {
     circletStat,
     gobletStat,
     name,
+    rarity,
     role,
     sandsStat,
+    strongRole,
     substats,
     topArtifacts,
     topWeapons,
@@ -45,9 +48,10 @@ function CharacterCard(props: GenshinCharacter) {
   } = props;
 
   return (
-    <div>
+    <div className="text-black dark:text-white">
       <div
         className={classnames(`
+          ${strongRole ? '' : 'bg-gray-700'}
           border-t-2
           border-x-2
           border-white
@@ -55,9 +59,9 @@ function CharacterCard(props: GenshinCharacter) {
           rounded-t-md
         `)}
       >
-        <div className="flex flex-row text-black dark:text-white">
+        <div className="flex flex-row items-center">
           <Image
-            className="bg-white border-2 rounded-full"
+            className={`${rarity === 4 ? 'bg-purple-300' : 'bg-amber-300'} border-2 rounded-full`}
             src={avatar}
             alt={`${name} Image`}
             priority={true}
@@ -67,15 +71,23 @@ function CharacterCard(props: GenshinCharacter) {
           <div className="ml-6">
             <h2 className="mb-4 text-4xl">{name}</h2>
             <div className="flex flex-row">
-              <Chip className="mr-2" label={role} />
+              <Chip className={`${strongRole ? 'bg-teal-700' : 'bg-gray-700'} mr-2`} label={role} />
               <Chip className="mr-2" label={vision} />
               <Chip label={weaponType} />
             </div>
           </div>
         </div>
       </div>
-      <div className="bg-slate-800 border-b-2 border-t border-x-2 border-white p-4 rounded-b-md">
-        <div className="mb-4 text-black dark:text-white">
+      <div className={classnames(`
+        ${strongRole ? 'bg-slate-800' : 'bg-gray-700'}
+        border-b-2
+        border-t
+        border-x-2
+        border-white
+        p-4
+        rounded-b-md
+      `)}>
+        <div className="mb-4">
           <h3 className="mb-2 text-2xl">Top Weapons</h3>
           <hr className="py-1" />
           <ul className="list-decimal pl-5">
@@ -86,25 +98,25 @@ function CharacterCard(props: GenshinCharacter) {
             ))}
           </ul>
         </div>
-        <div className="mb-4 text-black dark:text-white">
+        <div className="mb-4">
           <h3 className="mb-2 text-2xl">Top Artifacts</h3>
           <hr className="py-1" />
           <ul className="list-decimal pl-5">
             {topArtifacts.map(({ artifact1, artifact1Count, artifact2, artifact2Count }) => (
-              <li key={`${name}-${role}-${artifact1.name}-${artifact1Count}`}>
+              <li key={`${name}-${role}-${artifact1.name}-${artifact1Count}${artifact2?.name ? `-${artifact2.name}-${artifact2Count}` : ''}`}>
                 {artifact1.name} ({artifact1Count}){artifact2?.name ? `/${artifact2.name} (${artifact2Count})` : ''}
               </li>
             ))}
           </ul>
         </div>
-        <div className="mb-4 text-black dark:text-white">
+        <div className="mb-4">
           <h3 className="mb-2 text-2xl">Top Artifact Stats</h3>
           <hr className="py-1" />
           <p className="pb-1">Circlet: {circletStat.join('/')}</p>
           <p className="pb-1">Goblet: {gobletStat.join('/')}</p>
           <p>Sands: {sandsStat.join('/')}</p>
         </div>
-        <div className="text-black dark:text-white">
+        <div>
           <h3 className="mb-2 text-2xl">Top Artifact Substats</h3>
           <hr className="py-1" />
           <ul className="list-decimal pl-5">
@@ -112,6 +124,9 @@ function CharacterCard(props: GenshinCharacter) {
               <li key={`${name}-${role}-${substat}`}>{substat}</li>
             )}
           </ul>
+        </div>
+        <div className="flex justify-end">
+          <span className="text-xs">Last Reviewed: 01/01/2023</span>
         </div>
       </div>
     </div>

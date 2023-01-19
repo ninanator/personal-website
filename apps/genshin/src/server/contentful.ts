@@ -38,6 +38,8 @@ type ContentfulGenshinCharacter = {
   avatar: Asset;
   name: string;
   role: string;
+  strongRole: boolean;
+  rarity: number;
   vision: Vision;
   weaponType: WeaponType;
   topWeapons: Entry<ContentfulGenshinWeapon>[];
@@ -72,6 +74,7 @@ export async function getCharacters(): Promise<GenshinCharacter[]> {
     await client.getEntries({
       content_type: process.env.CONTENTFUL_CHARACTER_TYPE_ID,
       include: 2,
+      order: 'fields.name',
     });
 
   return characters.items.map(({ fields }) => ({

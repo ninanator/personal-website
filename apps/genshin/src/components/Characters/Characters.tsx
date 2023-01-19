@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { GenshinCharacter } from '../../type';
 import CharacterCard from '../CharacterCard';
-
+import { classnames } from '@nmb/ui';
 
 type CharactersProps = {
   data: GenshinCharacter[];
@@ -46,12 +46,27 @@ function Characters(props: CharactersProps) {
   }), {});
 
   const [characters, setCharacters] = React.useState(allCharacters);
+  const [showSuboptimal, setShowSuboptimal] = React.useState(true);
+
+  const visibleCharacterCards = characters.filter(({ strongRole }) => showSuboptimal || strongRole);
+  const numVisibleCharacterCards = visibleCharacterCards.length;
 
   return (
-    <>
-      <div>
+    <div className="text-black dark:text-white">
+      <div className={classnames(`
+        align-center
+        flex
+        flex-row
+        justify-between
+        mt-8
+        mx-4
+      `)}>
+        <div className="align-center flex flex-row">
+          <input className="w-6 h-6" onChange={event => setShowSuboptimal(!event.target.checked)} type="checkbox" />
+          <span className="ml-2">Show Only Recommended Builds</span>
+        </div>
         <input
-          className="mt-8 mx-4 p-2"
+          className="p-2 w-1/2 text-black"
           name="Search"
           onChange={(event) => {
             const searchTerms = event.target.value.toLowerCase().split(' ');
@@ -78,10 +93,13 @@ function Characters(props: CharactersProps) {
           type="search"
         />
       </div>
-      <div className="md:grid md:gap-4 md:grid-cols-3 md:grid-flow-row mt-8 m-3">
-        {characters.map(character => <CharacterCard key={`${character.name}-${character.role}`} {...character} />)}
+      <div className="mb-8 mx-4">
+        {numVisibleCharacterCards} Matches
       </div>
-    </>
+      <div className="md:grid md:gap-4 md:grid-cols-3 md:grid-flow-row mt-8 m-3">
+        {visibleCharacterCards.map(character => <CharacterCard key={`${character.name}-${character.role}`} {...character} />)}
+      </div>
+    </div>
   );
 }
 

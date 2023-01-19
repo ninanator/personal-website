@@ -15,8 +15,8 @@
     "type": "turbo run type"
   },
   "devDependencies": {
-    "prettier": "^2.8.2",
-    "turbo": "^1.6.3"
+    "prettier": "^2.8.3",
+    "turbo": "1.6.3"
   },
   "engines": {
     "node": "18.12.1"

@@ -66,6 +66,8 @@ export type GenshinCharacter = {
   avatar: string;
   name: string;
   role: string;
+  strongRole: boolean;
+  rarity: number;
   vision: Vision;
   weaponType: WeaponType;
   topWeapons: GenshinWeapon[];
